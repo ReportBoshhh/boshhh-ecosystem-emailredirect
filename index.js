@@ -11,11 +11,11 @@ app.get('/', (req, res) => {
 app.get('/verify', async (req, res) => {
   const token = req.query.token;
   
-  // Step 1: Verify token via API
+  // Verify token via API
   const isValid = await verifyTokenWithYourAPI(token); 
   const os = detectMobileOS(req);
   
-  // Step 2: Redirect logic
+  // Redirect logic
   if (isValid) {
     // Valid token → deep link
     return res.send(`
@@ -45,10 +45,10 @@ async function verifyTokenWithYourAPI(token) {
   try {
     const response = await fetch(`https://api.dev.boshhh.com/api/Email/VerifyToken?token=${token}`);
     const data = await response.json();
-    return data.isValid; // Assume API returns { isValid: boolean }
+    return data;
   } catch (error) {
     console.error('Error verifying token:', error);
-    return false; // Return false in case of API errors
+    return false;
   }
 }
 
