@@ -2,6 +2,11 @@
 const express = require('express');
 const app = express();
 
+// Add a simple home route
+app.get('/', (req, res) => {
+  res.send('Boshhh verification service is running. Use /verify endpoint with a token.');
+});
+
 // Verify endpoint
 app.get('/verify', async (req, res) => {
   const token = req.query.token;
@@ -68,3 +73,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Export for Vercel
 module.exports = app;
+
+// Alternative export format that some Vercel setups might need
+exports.default = app;
