@@ -31,20 +31,20 @@ app.get('/verify', async (req, res) => {
   // Mobile handling (deep link + token verification)
   const isValid = await verifyTokenWithYourAPI(token);
   if (isValid) {
-    res.send(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <script>
-            window.location.href = 'app.boshhh://token/${token}';
-            setTimeout(() => {
-              window.location.href = '${getAppStoreLink(os)}';
-            }, 3000);
-          </script>
-        </head>
-        <body>Redirecting to app...</body>
-      </html>
-    `);
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta http-equiv="refresh" content="3;url=${getAppStoreLink(os)}">
+        <script>
+          window.location.href = 'app.boshhh://token/${token}';
+        </script>
+      </head>
+      <body>
+        Redirecting to app... If nothing happens, you'll be redirected to the app store shortly.
+      </body>
+    </html>
+  `);
   } else {
     res.redirect("app.boshhh://");
   }
