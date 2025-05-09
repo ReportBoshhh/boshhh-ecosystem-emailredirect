@@ -1,24 +1,37 @@
-// index.js - Main server file
 const express = require('express');
 const app = express();
 
-// Add a simple home route
+// Home route
 app.get('/', (req, res) => {
   res.send('Boshhh verification service is running. Use /verify endpoint with a token.');
 });
 
 // Verify endpoint
-app.get('/verify', async (req, res) => {
+app.get('/verify', async (req, res) => { 
   const token = req.query.token;
-  
-  // Verify token via API
-  const isValid = await verifyTokenWithYourAPI(token); 
   const os = detectMobileOS(req);
-  
-  // Redirect logic
-  if (isValid) {
-    // Valid token → deep link
+
+  // This Handles Desktop Users 
+  if (os === 'Other') {
     return res.send(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Open on Mobile</title>
+        </head>
+        <body>
+          <h2>Please open this link on your phone</h2>
+          <p>This verification link only works on mobile devices.</p>
+        </body>
+      </html>
+    `);
+  }
+
+  // Mobile handling (deep link + token verification)
+  const isValid = await verifyTokenWithYourAPI(token);
+  if (isValid) {
+    res.send(`
       <!DOCTYPE html>
       <html>
         <head>
@@ -26,17 +39,14 @@ app.get('/verify', async (req, res) => {
             window.location.href = 'app.boshhh://token/${token}';
             setTimeout(() => {
               window.location.href = '${getAppStoreLink(os)}';
-            }, 1000);
+            }, 3000);
           </script>
         </head>
-        <body>
-          Redirecting to app...
-        </body>
+        <body>Redirecting to app...</body>
       </html>
     `);
   } else {
-    // Invalid token → direct to app store
-    return res.redirect(getAppStoreLink(os));
+    res.redirect("app.boshhh://");
   }
 });
 
@@ -52,18 +62,19 @@ async function verifyTokenWithYourAPI(token) {
   }
 }
 
+// Function to detect mobile OS
 function detectMobileOS(req) {
   const userAgent = req.headers['user-agent'] || '';
   return /android/i.test(userAgent) ? 'Android' : /iPad|iPhone|iPod/i.test(userAgent) ? 'iOS' : 'Other';
 }
 
+// Function to get the app store link based on the OS
 function getAppStoreLink(os) {
   return os === 'iOS' 
     ? 'https://apps.apple.com/gb/app/boshhh/id6446495097'
     : 'https://play.google.com/store/apps/details?id=com.app.boshhh';
 }
 
-// For local development
 if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
@@ -71,8 +82,5 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-// Export for Vercel
 module.exports = app;
-
-// Alternative export format that some Vercel setups might need
 exports.default = app;
