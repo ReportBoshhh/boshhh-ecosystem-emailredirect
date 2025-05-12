@@ -51,7 +51,7 @@ app.get('/verify', async (req, res) => {
 });
 
 // Helper functions
-async function verifyTokenWithYourAPI(token) {
+async function verifyTokenWithYourAPI(token, email, deviceId) {
   try {
     const response = await fetch(`https://api.dev.boshhh.com/api/Email/VerifyToken?token=${token}&email=${email}&deviceId=${deviceId}`);
     const data = await response.json();
