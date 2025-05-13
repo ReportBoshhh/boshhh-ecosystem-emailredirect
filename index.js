@@ -8,7 +8,7 @@ app.get('/', (req, res) => {
 
 // Verify endpoint
 app.get('/verify', async (req, res) => { 
-  const {token, email, deviceId} = req.query;
+  const {token, email} = req.query;
   const os = detectMobileOS(req);
 
   // This Handles Desktop Users 
@@ -29,7 +29,7 @@ app.get('/verify', async (req, res) => {
   }
 
   // Mobile handling (deep link + token verification)
-  const isValid = await verifyTokenWithYourAPI(token, email, deviceId);
+  const isValid = await verifyTokenWithYourAPI(token, email);
   if (isValid) {
   res.send(`
     <!DOCTYPE html>
@@ -51,9 +51,9 @@ app.get('/verify', async (req, res) => {
 });
 
 // Helper functions
-async function verifyTokenWithYourAPI(token, email, deviceId) {
+async function verifyTokenWithYourAPI(token, email) {
   try {
-    const response = await fetch(`https://api.dev.boshhh.com/api/Email/VerifyToken?token=${token}&email=${email}&deviceId=${deviceId}`);
+    const response = await fetch(`https://api.dev.boshhh.com/api/Email/VerifyToken?token=${token}&email=${email}`);
     const data = await response.json();
     return data;
   } catch (error) {
