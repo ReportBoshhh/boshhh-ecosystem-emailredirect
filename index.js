@@ -30,7 +30,9 @@ app.get('/verify', async (req, res) => {
 
   // Mobile handling (deep link + token verification)
   const isValid = await verifyTokenWithYourAPI(token, email);
+  console.log(isValid);
   if (isValid) {
+    console.log(token)
   res.send(`
     <!DOCTYPE html>
     <html>
@@ -53,8 +55,10 @@ app.get('/verify', async (req, res) => {
 // Helper functions
 async function verifyTokenWithYourAPI(token, email) {
   try {
-    const response = await fetch(`https://api.dev.boshhh.com/api/Email/VerifyToken?token=${token}&email=${email}`);
+    const response = await fetch(`https://api.prod.boshhh.com/api/Email/VerifyToken?token=${token}&email=${email}`);
     const data = await response.json();
+    
+  console.log(data);
     return data;
   } catch (error) {
     console.error('Error verifying token:', error);
