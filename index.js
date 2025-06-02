@@ -11,7 +11,8 @@ app.get('/verify', async (req, res) => {
   const {token, email} = req.query;
   const os = detectMobileOS(req);
 
-  console.log("what is the platform: ", os)
+  console.log(os);
+
   // This Handles Desktop Users 
   if (os === 'Other') {
     return res.send(`
@@ -71,7 +72,18 @@ async function verifyTokenWithYourAPI(token, email) {
 // Function to detect mobile OS
 function detectMobileOS(req) {
   const userAgent = req.headers['user-agent'] || '';
-  return /android/i.test(userAgent) ? 'Android' : /iPad|iPhone|iPod/i.test(userAgent) ? 'iOS' : 'Other';
+  
+  // 1. Detect Android Phones (exclude tablets unless they have cellular)
+  const isAndroid = /Android/i.test(userAgent);
+  const isMobile = /Mobile/i.test(userAgent);
+  
+  // 2. Detect iOS (iPhone, iPad, iPod)
+  const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+
+  // 3. Return OS or "Other" for desktops/tablets without cellular
+  if (isIOS) return 'iOS';
+  if (isAndroid && isMobile) return 'Android';
+  return 'Other';
 }
 
 // Function to get the app store link based on the OS
