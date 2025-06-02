@@ -11,6 +11,7 @@ app.get('/verify', async (req, res) => {
   const {token, email} = req.query;
   const os = detectMobileOS(req);
 
+  console.log("what is the platform: ", os)
   // This Handles Desktop Users 
   if (os === 'Other') {
     return res.send(`
@@ -48,6 +49,7 @@ app.get('/verify', async (req, res) => {
     </html>
   `);
   } else {
+    console.log("Invalid token");
     res.redirect("app.boshhh://");
   }
 });
@@ -69,7 +71,22 @@ async function verifyTokenWithYourAPI(token, email) {
 // Function to detect mobile OS
 function detectMobileOS(req) {
   const userAgent = req.headers['user-agent'] || '';
-  return /android/i.test(userAgent) ? 'Android' : /iPad|iPhone|iPod/i.test(userAgent) ? 'iOS' : 'Other';
+  
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(userAgent);
+  
+  if (!isMobile) {
+    return 'Other'; // Desktop
+  }
+  
+  if (/Android/i.test(userAgent)) {
+    return 'Android';
+  }
+  
+  if (/iPhone|iPad|iPod/i.test(userAgent)) {
+    return 'iOS';
+  }
+  
+  return 'Mobile';
 }
 
 // Function to get the app store link based on the OS
