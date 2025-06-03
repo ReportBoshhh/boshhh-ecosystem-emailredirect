@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
 app.get('/verify', async (req, res) => { 
   const {token, email} = req.query;
   const os = detectMobileOS(req);
-  
+
   // This Handles Desktop Users 
   if (os === 'Other') {
     return res.send(`
@@ -30,23 +30,26 @@ app.get('/verify', async (req, res) => {
 
   // Mobile handling (deep link + token verification)
   const isValid = await verifyTokenWithYourAPI(token, email);
-  console.log(isValid);
   if (isValid) {
-    console.log(token)
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta http-equiv="refresh" content="3;url=${getAppStoreLink(os)}">
-        <script>
-          window.location.href = 'app.boshhh://token/${token}';
-        </script>
-      </head>
-      <body>
-        Redirecting to app... If nothing happens, you'll be redirected to the app store shortly.
-      </body>
-    </html>
-  `);
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta http-equiv="refresh" content="3;url=${getAppStoreLink(os)}">
+          <script>
+          if ('${os}' === 'iOS') {
+          const shouldOpen = confirm("Open in Boshhh app?");
+          if (shouldOpen) window.location.href = 'app.boshhh://token/${token}';
+          } else {
+            window.location.href = 'app.boshhh://token/${token}';
+          }
+          </script>
+        </head>
+        <body>
+          Redirecting to app... If nothing happens, you'll be redirected to the app store shortly.
+        </body>
+      </html>
+    `);
   } else {
     console.log("Invalid token");
     res.redirect("app.boshhh://");
@@ -55,11 +58,9 @@ app.get('/verify', async (req, res) => {
 
 // Helper functions
 async function verifyTokenWithYourAPI(token, email) {
-  try {
+  try {    
     const response = await fetch(`https://api.prod.boshhh.com/api/Email/VerifyToken?token=${token}&email=${email}`);
-    const data = await response.json();
-    
-  console.log(data);
+    const data = await response.json();    
     return data;
   } catch (error) {
     console.error('Error verifying token:', error);
