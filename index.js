@@ -37,7 +37,7 @@ app.get('/verify', async (req, res) => {
         <head>
           <meta http-equiv="refresh" content="3;url=${getAppStoreLink(os)}">
           <script>
-          if ('${os}' === 'iOS') {
+          if ('${os}' === 'iOS' && ${isNewIOS(req)} === false) {
           const shouldOpen = confirm("Open in Boshhh app?");
           if (shouldOpen) window.location.href = 'app.boshhh://token/${token}';
           } else {
@@ -72,6 +72,12 @@ async function verifyTokenWithYourAPI(token, email) {
 function detectMobileOS(req) {
   const userAgent = req.headers['user-agent'] || '';
   return /android/i.test(userAgent) ? 'Android' : /iPad|iPhone|iPod/i.test(userAgent) ? 'iOS' : 'Other';
+}
+
+function isNewIOS(req) {
+  const userAgent = req.headers['user-agent'] || '';
+  console.log(userAgent)
+  return /iPhone.*OS (1[6-9]|[0-9]\d)_\d/i.test(userAgent);
 }
 
 // Function to get the app store link based on the OS
