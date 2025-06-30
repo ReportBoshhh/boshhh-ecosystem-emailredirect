@@ -12,7 +12,7 @@ app.get('/verify', async (req, res) => {
   const os = detectMobileOS(req);
 
   // This Handles Desktop Users 
-  if (os === 'Other') {
+  if (os === 'Windows') {
     return res.send(`
       <!DOCTYPE html>
       <html>
@@ -71,7 +71,7 @@ async function verifyTokenWithYourAPI(token, email) {
 // Function to detect mobile OS
 function detectMobileOS(req) {
   const userAgent = req.headers['user-agent'] || '';
-  return /android/i.test(userAgent) ? 'Android' : /iPad|iPhone|iPod/i.test(userAgent) ? 'iOS' : 'Other';
+  return /android/i.test(userAgent) ? 'Android' : /iPad|iPhone|iPod/i.test(userAgent) ? 'iOS' : /Windows/i.test(userAgent) ? 'Windows' : 'Other';
 }
 
 function isNewIOS(req) {
